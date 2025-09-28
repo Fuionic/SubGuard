@@ -31,7 +31,7 @@ In today’s digital world:
 - **Linked Account Monitoring**  
   - Track linked accounts (Google, email, etc.).  
   - Notify user if accounts are unused for a configurable period.  
-  - 🔄 In Progress  
+  - ✅ Completed  
 
 ### Future Enhancements (Phase 2+)
 - **Privacy Cleaner** → Identify unused accounts, suggest cleanup.  
