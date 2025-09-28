@@ -62,5 +62,29 @@ In today’s digital world:
 - **Security:** Spring Security basic authentication  
 
 ---
+## Backend Status (MVP – Completed)
+
+The backend for SubGuard MVP has been implemented and tested using Postman.
+
+### Tested Endpoints
+
+**User Authentication**
+- `POST /signup` → Register new user
+- `POST /login` → User login
+
+**Subscription Management**
+- `POST /subscription` → Add new subscription
+- `GET /subscriptions` → Retrieve all subscriptions
+
+**Linked Account Management**
+- `POST /linked-account` → Add a linked account
+- `GET /linked-accounts` → Retrieve all linked accounts
+
+### Postman Testing Screenshots
+![Signup Endpoint](screenshots/Signup.png)  
+![Login Endpoint](screenshots/Login.png)  
+![Add Subscription](screenshots/Add-Subscription.png)  
+![Get Unused Account](screenshots/get-unused-account.png)  
+![Linked Accounts](screenshots/Add-Linked-account.png)  
 
 
