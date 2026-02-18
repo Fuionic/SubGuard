@@ -17,20 +17,32 @@ public class LinkedAccount {
 
     private LocalDate lastUsedDate;
 
-    private int notifyAfterMonths; // notify if unused for this many months
+    private int notifyAfterMonths; // review interval
+
+    private LocalDate nextReviewDate; // // 🔥 new field
+
+    private boolean reviewCompleted = false;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    // 🔥 Auto-calculate nextReviewDate before saving
+    @PrePersist
+    @PreUpdate
+    public void calculateNextReviewDate() {
+        if (lastUsedDate != null && notifyAfterMonths > 0) {
+            this.nextReviewDate = lastUsedDate.plusMonths(notifyAfterMonths);
+            this.reviewCompleted = false; // reset for next cycle
+        }
+    }
+
+
     // Getters and Setters
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getAccountEmail() {
@@ -65,11 +77,27 @@ public class LinkedAccount {
         this.notifyAfterMonths = notifyAfterMonths;
     }
 
+    public LocalDate getNextReviewDate() {
+        return nextReviewDate;
+    }
+
+    public void setNextReviewDate(LocalDate nextReviewDate) {
+        this.nextReviewDate = nextReviewDate;
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isReviewCompleted() {
+        return reviewCompleted;
+    }
+
+    public void setReviewCompleted(boolean reviewCompleted) {
+        this.reviewCompleted = reviewCompleted;
     }
 }

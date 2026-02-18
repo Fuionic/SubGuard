@@ -34,8 +34,12 @@ public class UserController {
         String email = user.getEmail();
         String password = user.getPassword();
 
+        if (password == null || password.isBlank()) {
+            return "Password is required";
+        }
+
         return userrepository.findByEmail(email)
-                .filter(u -> u.getPassword().equals(password))
+                .filter(u -> u.getPassword() != null && u.getPassword().equals(password))
                 .map(u -> "Login successful")
                 .orElse("Invalid credentials");
     }

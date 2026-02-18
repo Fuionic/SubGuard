@@ -17,6 +17,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+  
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,7 +48,7 @@ public class User {
         this.email = email.toLowerCase().trim(); // normalize email
     }
 
-    @JsonIgnore
+
     public String getPassword() {
         return password;
     }

@@ -21,17 +21,26 @@ public class LinkedAccountController {
     @Autowired
     private Userrepository userrepository;
 
-    // Add a linked account
     @PostMapping("/user/{userId}")
-    public LinkedAccount addLinkedAccount(@PathVariable Long userId, @RequestBody LinkedAccount account) {
+    public LinkedAccount addLinkedAccount(@PathVariable Long userId,
+                                          @RequestBody LinkedAccount account) {
+
         User user = userrepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (account.getLastUsedDate() == null) {
+            account.setLastUsedDate(LocalDate.now());
+        }
+
+        if (account.getNotifyAfterMonths() <= 0) {
+            account.setNotifyAfterMonths(3); // default 3 months
+        }
+
         account.setUser(user);
+
         return linkedAccountRepository.save(account);
     }
 
-    // Get all linked accounts for a user
     @GetMapping("/user/{userId}")
     public List<LinkedAccount> getUserAccounts(@PathVariable Long userId) {
         User user = userrepository.findById(userId)
@@ -40,9 +49,9 @@ public class LinkedAccountController {
         return linkedAccountRepository.findByUser(user);
     }
 
-    // Get accounts unused beyond notifyAfterMonths
     @GetMapping("/user/{userId}/unused")
     public List<LinkedAccount> getUnusedAccounts(@PathVariable Long userId) {
+
         User user = userrepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -50,8 +59,22 @@ public class LinkedAccountController {
 
         return linkedAccountRepository.findByUser(user)
                 .stream()
-                .filter(acc -> acc.getLastUsedDate() != null &&
-                        acc.getLastUsedDate().plusMonths(acc.getNotifyAfterMonths()).isBefore(today))
-                .collect(Collectors.toList());
+                .filter(acc -> acc.getNextReviewDate() != null &&
+                        !acc.getNextReviewDate().isAfter(today))
+                .toList();
     }
+
+    //http://localhost:8080/api/accounts/1/confirm-usage
+    @PutMapping("/{accountId}/confirm-usage")
+    public LinkedAccount confirmUsage(@PathVariable Long accountId) {
+
+        LinkedAccount account = linkedAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setLastUsedDate(LocalDate.now());
+        account.setReviewCompleted(true);
+
+        return linkedAccountRepository.save(account);
+    }
+
 }

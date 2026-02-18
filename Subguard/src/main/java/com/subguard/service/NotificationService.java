@@ -54,23 +54,32 @@ public class NotificationService {
         }
     }
 
-    @Scheduled(cron = "0 30 8 * * ?") // same day, 8:30 AM
+    @Scheduled(fixedRate = 10000)
+    // Every 3 hours
     public void checkUnusedLinkedAccounts() {
+
         List<User> users = userrepository.findAll();
         LocalDate today = LocalDate.now();
 
         for (User user : users) {
+
             List<LinkedAccount> accounts = linkedAccountRepository.findByUser(user);
 
             for (LinkedAccount acc : accounts) {
-                if (acc.getLastUsedDate() != null &&
-                        acc.getLastUsedDate().plusMonths(acc.getNotifyAfterMonths()).isBefore(today)) {
-                    System.out.println("Notification for user " + user.getEmail() +
-                            ": Linked account " + acc.getAccountEmail() +
-                            " on " + acc.getServiceName() +
-                            " hasn't been used for " + acc.getNotifyAfterMonths() + " months.");
+
+                if (acc.getNextReviewDate() != null &&
+                        acc.getNextReviewDate().isEqual(today) &&
+                        !acc.isReviewCompleted())  {
+
+                    System.out.println("Reminder for user " + user.getEmail() +
+                            ": Review your login for " +
+                            acc.getServiceName() +
+                            " (" + acc.getAccountEmail() + ").");
+
                 }
             }
         }
     }
+
+
 }
