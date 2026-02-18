@@ -80,6 +80,16 @@ The backend for SubGuard MVP has been implemented and tested using Postman.
 - `POST /linked-account` → Add a linked account
 - `GET /linked-accounts` → Retrieve all linked accounts
 
+### **_How to Run the Backend_**
+1. Clone the repository: `git clone 
+2. Navigate to the backend directory: `cd SubGuard/backend`
+3. Build the project: `mvn clean install`
+4. change the database configuration in `application.properties` to match your local setup.
+5. Run the application: `mvn spring-boot:run`
+6. Use Postman to test the endpoints as shown in the screenshots below.
+7. The backend will be running on `http://localhost:8080`.
+
+
 ### Postman Testing Screenshots
 ![Signup Endpoint](screenshots/Signup.png)  
 ![Login Endpoint](screenshots/Login.png)  
