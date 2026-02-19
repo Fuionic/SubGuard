@@ -80,14 +80,25 @@ The backend for SubGuard MVP has been implemented and tested using Postman.
 - `POST /linked-account` → Add a linked account
 - `GET /linked-accounts` → Retrieve all linked accounts
 
-### **_How to Run the Backend_**
-1. Clone the repository: `git clone 
-2. Navigate to the backend directory: `cd SubGuard/backend`
-3. Build the project: `mvn clean install`
-4. change the database configuration in `application.properties` to match your local setup.
-5. Run the application: `mvn spring-boot:run`
-6. Use Postman to test the endpoints as shown in the screenshots below.
-7. The backend will be running on `http://localhost:8080`.
+## Running the Project Locally
+
+### 1. Clone the repositoryclear
+
+git clone https://github.com/Fuionic/SubGuard.git
+cd SubGuard
+
+### 2. Create MySQL database
+CREATE DATABASE subguard;
+
+### 3. Create a database user
+CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON subguard.* TO 'your_username'@'localhost';
+FLUSH PRIVILEGES;
+
+### 4. Configure environment variables (in IDE run configuration)
+DB_USERNAME=your_username
+DB_PASSWORD=you
+
 
 
 ### Postman Testing Screenshots
