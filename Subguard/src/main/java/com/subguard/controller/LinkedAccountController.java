@@ -64,6 +64,20 @@ public class LinkedAccountController {
                 .toList();
     }
 
+    //http://localhost:8080/api/accounts/1/confirm-not-using
+    @PutMapping("/{accountId}/confirm-not-using")
+    public LinkedAccount confirmNotUsing(@PathVariable Long accountId) {
+
+        LinkedAccount account = linkedAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setReviewCompleted(true);
+
+        System.out.println("User should logout from: " + account.getServiceName());
+
+        return linkedAccountRepository.save(account);
+    }
+
     //http://localhost:8080/api/accounts/1/confirm-usage
     @PutMapping("/{accountId}/confirm-usage")
     public LinkedAccount confirmUsage(@PathVariable Long accountId) {
@@ -72,7 +86,7 @@ public class LinkedAccountController {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         account.setLastUsedDate(LocalDate.now());
-        account.setReviewCompleted(true);
+        account.setReviewCompleted(false);
 
         return linkedAccountRepository.save(account);
     }

@@ -34,7 +34,7 @@ public class LinkedAccount {
     public void calculateNextReviewDate() {
         if (lastUsedDate != null && notifyAfterMonths > 0) {
             this.nextReviewDate = lastUsedDate.plusMonths(notifyAfterMonths);
-            this.reviewCompleted = false; // reset for next cycle
+//            this.reviewCompleted = false; // reset for next cycle
         }
     }
 

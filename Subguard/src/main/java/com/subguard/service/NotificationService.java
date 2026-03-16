@@ -25,61 +25,132 @@ public class NotificationService {
     @Autowired
     private LinkedAccountRepository linkedAccountRepository;
 
-    // Check every day at 8 AM (cron: second, minute, hour, day, month, day-of-week)
-    @Scheduled(cron = "0 0 8 * * ?")
-    public void checkSubscriptions() {
-        List<User> users = userrepository.findAll();
+
+    /*
+        SUBSCRIPTION REMINDERS
+        ----------------------
+        Renewal date = R
+
+        R-2 days 8 AM
+        R-2 days 9 PM
+        R-1 day  9 PM
+        R day    8 AM
+     */
+
+    // Morning reminders (8 AM)
+    // For testing we use fixedRate
+    // In production change to: @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(fixedRate = 10000)
+    public void checkSubscriptionsMorning() {
+
         LocalDate today = LocalDate.now();
 
-        for (User user : users) {
+        for (User user : userrepository.findAll()) {
+
             List<Subscription> subs = subscriptionRepository.findByUser(user);
 
             for (Subscription sub : subs) {
-                // Check trial ending soon
+
+                // ---------- Trial logic (existing) ----------
                 if (sub.isFreeTrial() && sub.getTrialEndDate() != null &&
                         !sub.getTrialEndDate().isBefore(today) &&
                         !sub.getTrialEndDate().isAfter(today.plusDays(3))) {
+
                     System.out.println("Notification for user " + user.getEmail() +
-                            ": Trial for " + sub.getName() + " ends on " + sub.getTrialEndDate());
+                            ": Trial for " + sub.getName() +
+                            " ends on " + sub.getTrialEndDate());
                 }
 
-                // Check renewal coming up
-                if (sub.getRenewalDate() != null &&
-                        !sub.getRenewalDate().isBefore(today) &&
-                        !sub.getRenewalDate().isAfter(today.plusDays(3))) {
-                    System.out.println("Notification for user " + user.getEmail() +
-                            ": Subscription " + sub.getName() + " renews on " + sub.getRenewalDate());
+                // ---------- Renewal logic ----------
+                if (sub.getRenewalDate() == null) continue;
+
+                LocalDate renewalDate = sub.getRenewalDate();
+
+                // 2 days before renewal (morning reminder)
+                if (renewalDate.minusDays(2).isEqual(today)) {
+
+                    System.out.println("Reminder for user " + user.getEmail() +
+                            ": Your subscription " + sub.getName() +
+                            " will renew in 2 days on " + renewalDate);
+                }
+
+                // Renewal day reminder
+                if (renewalDate.isEqual(today)) {
+
+                    System.out.println("Reminder for user " + user.getEmail() +
+                            ": Your subscription " + sub.getName() +
+                            " renews today.");
                 }
             }
         }
     }
 
-    @Scheduled(fixedRate = 10000)
-    // Every 3 hours
-    public void checkUnusedLinkedAccounts() {
 
-        List<User> users = userrepository.findAll();
+    // Night reminders (9 PM)
+    // Production: @Scheduled(cron = "0 0 21 * * ?")
+    @Scheduled(fixedRate = 10000)
+    public void checkSubscriptionsNight() {
+
         LocalDate today = LocalDate.now();
 
-        for (User user : users) {
+        for (User user : userrepository.findAll()) {
+
+            List<Subscription> subs = subscriptionRepository.findByUser(user);
+
+            for (Subscription sub : subs) {
+
+                if (sub.getRenewalDate() == null) continue;
+
+                LocalDate renewalDate = sub.getRenewalDate();
+
+                // 2 days before renewal (night reminder)
+                if (renewalDate.minusDays(2).isEqual(today)) {
+
+                    System.out.println("Evening reminder for user " + user.getEmail() +
+                            ": Your subscription " + sub.getName() +
+                            " renews in 2 days.");
+                }
+
+                // 1 day before renewal (final warning)
+                if (renewalDate.minusDays(1).isEqual(today)) {
+
+                    System.out.println("Final reminder for user " + user.getEmail() +
+                            ": Your subscription " + sub.getName() +
+                            " renews tomorrow.");
+                }
+            }
+        }
+    }
+
+
+    /*
+        LINKED ACCOUNT REMINDERS
+        ------------------------
+        Reminds user to review inactive accounts
+        Runs every few hours (testing every 10 sec)
+     */
+    @Scheduled(cron = "0 0 */3 * * ?")
+    public void checkUnusedLinkedAccounts() {
+
+        LocalDate today = LocalDate.now();
+
+        for (User user : userrepository.findAll()) {
 
             List<LinkedAccount> accounts = linkedAccountRepository.findByUser(user);
 
             for (LinkedAccount acc : accounts) {
 
-                if (acc.getNextReviewDate() != null &&
-                        acc.getNextReviewDate().isEqual(today) &&
-                        !acc.isReviewCompleted())  {
+                if (acc.getNextReviewDate() == null) continue;
+
+                // Only notify on the exact review date
+                if (acc.getNextReviewDate().isEqual(today) && !acc.isReviewCompleted()) {
 
                     System.out.println("Reminder for user " + user.getEmail() +
-                            ": Review your login for " +
+                            ": Are you still using " +
                             acc.getServiceName() +
-                            " (" + acc.getAccountEmail() + ").");
-
+                            " (" + acc.getAccountEmail() + ")?");
                 }
             }
         }
     }
-
-
 }
