@@ -1,10 +1,10 @@
 // src/components/LinkedAccounts/AddLinkedAccount.jsx
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 
 function AddLinkedAccount({ onClose }) {
   const [form, setForm] = useState({ accountEmail: '', serviceName: '', lastUsedDate: '', notifyAfterMonths: '' });
-  const userEmail = localStorage.getItem('userId');
+  const userId = parseInt(localStorage.getItem('userId'), 10) || 1;
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -14,7 +14,7 @@ function AddLinkedAccount({ onClose }) {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:8080/api/linkedaccounts/user/${userEmail}`, form);
+      await apiClient.post(`/accounts/user/${userId}`, form);
       alert('Linked account added');
       setForm({ accountEmail: '', serviceName: '', lastUsedDate: '', notifyAfterMonths: '' });
       if (onClose) onClose();

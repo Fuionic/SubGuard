@@ -80,6 +80,7 @@ body {
   background: var(--bg-gradient);
   color: var(--text-primary);
   transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
 html {
@@ -268,4 +269,13 @@ input:checked + .slider:before {
 .btn-secondary:hover {
   background: var(--input-border);
   color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .premium-form {
+    gap: 1rem;
+  }
 }

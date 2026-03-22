@@ -1,15 +1,15 @@
 // src/components/Subscriptions/SubscriptionList.jsx
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 
 function SubscriptionList({ limit }) {
   const [subscriptions, setSubscriptions] = useState([]);
-  const userEmail = localStorage.getItem('userId');
+  const userId = parseInt(localStorage.getItem('userId'), 10) || 1;
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/subscriptions/user/${userEmail}`);
+        const res = await apiClient.get(`/subscriptions/user/${userId}`);
         setSubscriptions(res.data);
       } catch (err) {
         console.error(err);

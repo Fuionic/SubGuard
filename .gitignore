@@ -7,25 +7,52 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
 *.local
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Java / Backend
+target/
+build/
+.settings/
+.classpath
+.project
+bin/
+*.class
+*.jar
+*.war
+*.ear
+.factorypath
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
+*.iml
+*.iws
+*.ipr
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-node_modules/
-dist/
-.env
-.env.local
+# OS
 .DS_Store
 Thumbs.db
+
+# Project Internal / Scratch
+TODO.md
+scratchpad.md
+scratch/
+temp/
+tmp/
+.agent/
+.agents/

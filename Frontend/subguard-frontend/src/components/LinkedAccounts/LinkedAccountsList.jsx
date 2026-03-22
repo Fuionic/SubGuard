@@ -1,15 +1,15 @@
 // src/components/LinkedAccounts/LinkedAccountsList.jsx
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 
 function LinkedAccountsList({ limit }) {
   const [accounts, setAccounts] = useState([]);  
-  const userEmail = localStorage.getItem('userId');
+  const userId = parseInt(localStorage.getItem('userId'), 10) || 1;
 
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/linkedaccounts/user/${userEmail}`);
+        const res = await apiClient.get(`/accounts/user/${userId}`);
         setAccounts(res.data);
       } catch (err) {
         console.error(err);

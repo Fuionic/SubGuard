@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 import { useNavigate } from 'react-router-dom';
-import './Signup.css';
+import './Auth.css';
 
 function Signup() {
   const navigate = useNavigate();
@@ -13,13 +13,19 @@ function Signup() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8080/api/auth/signup', form);
-      setMessage(res.data);
-      if(res.data.includes("success")) {
+      const res = await apiClient.post('/auth/signup', form);
+      if (res.data !== "Email already registered") {
+        const userId = parseInt(res.data, 10);
+        if (isNaN(userId)) {
+          setMessage("Backend returned: " + res.data + " (Did you recompile Java?)");
+          return;
+        }
         const username = form.name;
-        localStorage.setItem('userId', form.email); // store identifier
+        localStorage.setItem('userId', userId); // store identifier
         localStorage.setItem('username', username); // store username
         navigate('/dashboard');
+      } else {
+        setMessage(res.data);
       }
     } catch (err) {
       setMessage('Error signing up');
@@ -28,15 +34,23 @@ function Signup() {
 
   return (
     <div className="auth-container">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-        <input name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
-        <button type="submit">Sign Up</button>
-      </form>
-      {message && <p>{message}</p>}
-      <p>Already have an account? <a href="/login" className="login-link">Login</a></p>
+      <h2>Create Account</h2>
+      <div className="auth-wrapper">
+        <form onSubmit={handleSubmit}>
+          <div className="auth-input-group">
+            <input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} required />
+          </div>
+          <div className="auth-input-group">
+            <input type="email" name="email" placeholder="Email Address" value={form.email} onChange={handleChange} required />
+          </div>
+          <div className="auth-input-group">
+            <input type="password" name="password" placeholder="Create Password" value={form.password} onChange={handleChange} required />
+          </div>
+          <button type="submit">Sign Up Free</button>
+          {message && <p className="auth-message">{message}</p>}
+        </form>
+      </div>
+      <p className="auth-footer">Already have an account? <a href="/login" className="auth-link">Log in</a></p>
     </div>
   );
 }

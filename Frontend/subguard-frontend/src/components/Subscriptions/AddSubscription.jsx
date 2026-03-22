@@ -1,12 +1,12 @@
 // src/components/Subscriptions/AddSubscription.jsx
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 
 function AddSubscription({ onClose }) {
   const [form, setForm] = useState({
     name: '', price: '', renewalDate: '', isFreeTrial: false, trialEndDate: '', frequency: 'MONTHLY'
   });
-  const userEmail = localStorage.getItem('userId');
+  const userId = parseInt(localStorage.getItem('userId'), 10) || 1;
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -16,7 +16,7 @@ function AddSubscription({ onClose }) {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:8080/api/subscriptions/user/${userEmail}`, form);
+      await apiClient.post(`/subscriptions/user/${userId}`, form);
       alert('Subscription added');
       setForm({ name: '', price: '', renewalDate: '', isFreeTrial: false, trialEndDate: '', frequency: 'MONTHLY' });
       if (onClose) onClose();

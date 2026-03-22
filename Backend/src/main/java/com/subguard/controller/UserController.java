@@ -24,8 +24,8 @@ public class UserController {
         }
 
         user.setEmail(email);
-        userrepository.save(user);
-        return "User registered successfully";
+        User savedUser = userrepository.save(user);
+        return String.valueOf(savedUser.getId());
     }
 
     // Login
@@ -40,7 +40,7 @@ public class UserController {
 
         return userrepository.findByEmail(email)
                 .filter(u -> u.getPassword() != null && u.getPassword().equals(password))
-                .map(u -> "Login successful")
+                .map(u -> String.valueOf(u.getId()))
                 .orElse("Invalid credentials");
     }
 }

@@ -16,7 +16,7 @@ import './Dashboard.css';
 
 
 function Dashboard() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
   const [showAddSubscriptionModal, setShowAddSubscriptionModal] = useState(false);
   const [showAddLinkedAccountModal, setShowAddLinkedAccountModal] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
@@ -25,7 +25,7 @@ function Dashboard() {
   return (
 
     <div className="dashboard-container">
-      <Topbar userEmail={userEmail} />
+      <Topbar userEmail={userEmail} collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="dashboard-body">
         <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="dashboard-main">
@@ -95,9 +95,8 @@ function Dashboard() {
       {/* Vault Modal */}
       {showPasswordVault && (
         <div className="modal-overlay" onClick={() => setShowPasswordVault(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{maxWidth: '90vw', maxHeight: '90vh', width: '800px'}}>
-            <button className="modal-close" onClick={() => setShowPasswordVault(false)}>×</button>
-            <h3>🔐 Password Vault</h3>
+          <div className="modal-content vault-modal" onClick={(e) => e.stopPropagation()} style={{maxWidth: '95vw', maxHeight: '95vh', width: '1100px', padding: '0', overflow: 'hidden'}}>
+            <button className="modal-close" onClick={() => setShowPasswordVault(false)} style={{zIndex: '100'}}>×</button>
             <PasswordManager />
           </div>
         </div>
