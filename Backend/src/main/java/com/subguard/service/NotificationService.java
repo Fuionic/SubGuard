@@ -46,6 +46,9 @@ public class NotificationService {
         LocalDate today = LocalDate.now();
 
         for (User user : userrepository.findAll()) {
+            if (!user.isNotificationsEnabled()) continue;
+            
+            String targetEmail = user.getNotificationEmail() != null ? user.getNotificationEmail() : user.getEmail();
 
             List<Subscription> subs = subscriptionRepository.findByUser(user);
 
@@ -56,7 +59,7 @@ public class NotificationService {
                         !sub.getTrialEndDate().isBefore(today) &&
                         !sub.getTrialEndDate().isAfter(today.plusDays(3))) {
 
-                    System.out.println("Notification for user " + user.getEmail() +
+                    System.out.println("Notification for user " + targetEmail +
                             ": Trial for " + sub.getName() +
                             " ends on " + sub.getTrialEndDate());
                 }
@@ -69,7 +72,7 @@ public class NotificationService {
                 // 2 days before renewal (morning reminder)
                 if (renewalDate.minusDays(2).isEqual(today)) {
 
-                    System.out.println("Reminder for user " + user.getEmail() +
+                    System.out.println("Reminder for user " + targetEmail +
                             ": Your subscription " + sub.getName() +
                             " will renew in 2 days on " + renewalDate);
                 }
@@ -77,7 +80,7 @@ public class NotificationService {
                 // Renewal day reminder
                 if (renewalDate.isEqual(today)) {
 
-                    System.out.println("Reminder for user " + user.getEmail() +
+                    System.out.println("Reminder for user " + targetEmail +
                             ": Your subscription " + sub.getName() +
                             " renews today.");
                 }
@@ -94,6 +97,9 @@ public class NotificationService {
         LocalDate today = LocalDate.now();
 
         for (User user : userrepository.findAll()) {
+            if (!user.isNotificationsEnabled()) continue;
+
+            String targetEmail = user.getNotificationEmail() != null ? user.getNotificationEmail() : user.getEmail();
 
             List<Subscription> subs = subscriptionRepository.findByUser(user);
 
@@ -106,7 +112,7 @@ public class NotificationService {
                 // 2 days before renewal (night reminder)
                 if (renewalDate.minusDays(2).isEqual(today)) {
 
-                    System.out.println("Evening reminder for user " + user.getEmail() +
+                    System.out.println("Evening reminder for user " + targetEmail +
                             ": Your subscription " + sub.getName() +
                             " renews in 2 days.");
                 }
@@ -114,7 +120,7 @@ public class NotificationService {
                 // 1 day before renewal (final warning)
                 if (renewalDate.minusDays(1).isEqual(today)) {
 
-                    System.out.println("Final reminder for user " + user.getEmail() +
+                    System.out.println("Final reminder for user " + targetEmail +
                             ": Your subscription " + sub.getName() +
                             " renews tomorrow.");
                 }
@@ -135,6 +141,9 @@ public class NotificationService {
         LocalDate today = LocalDate.now();
 
         for (User user : userrepository.findAll()) {
+            if (!user.isNotificationsEnabled()) continue;
+
+            String targetEmail = user.getNotificationEmail() != null ? user.getNotificationEmail() : user.getEmail();
 
             List<LinkedAccount> accounts = linkedAccountRepository.findByUser(user);
 
@@ -145,7 +154,7 @@ public class NotificationService {
                 // Only notify on the exact review date
                 if (acc.getNextReviewDate().isEqual(today) && !acc.isReviewCompleted()) {
 
-                    System.out.println("Reminder for user " + user.getEmail() +
+                    System.out.println("Reminder for user " + targetEmail +
                             ": Are you still using " +
                             acc.getServiceName() +
                             " (" + acc.getAccountEmail() + ")?");

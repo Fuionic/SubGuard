@@ -17,4 +17,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     // Optional: find subscriptions whose trial ends before a certain date
     List<Subscription> findByUserAndTrialEndDateBefore(User user, LocalDate date);
+
+    void deleteByUser(User user);
 }

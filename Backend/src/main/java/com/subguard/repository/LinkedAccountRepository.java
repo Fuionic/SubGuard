@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface LinkedAccountRepository extends JpaRepository<LinkedAccount, Long> {
     List<LinkedAccount> findByUser(User user);
+    void deleteByUser(User user);
 }
