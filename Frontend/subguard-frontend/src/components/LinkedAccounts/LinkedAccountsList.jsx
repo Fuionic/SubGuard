@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import apiClient from '../../api/apiClient';
 
 function LinkedAccountsList({ limit }) {
-  const [accounts, setAccounts] = useState([]);  
+  const [accounts, setAccounts] = useState([]);
   const userId = parseInt(localStorage.getItem('userId'), 10) || 1;
 
   useEffect(() => {
@@ -16,18 +16,17 @@ function LinkedAccountsList({ limit }) {
       }
     };
     fetchAccounts();
-  }, []);
+  }, [userId]);
 
   return (
     <div className="preview-list">
       {accounts.length === 0 ? <p>No linked accounts yet</p> :
         <ul>
-          {accounts.slice(0, limit || 5).map(acc => (
+          {accounts.slice(0, limit || 999).map(acc => (
             <li key={acc.id}>
-              {acc.serviceName} — {acc.accountEmail} — {acc.lastUsedDate}
+              <strong>{acc.serviceName}</strong> — {acc.accountEmail} — Last used: {acc.lastUsedDate}
             </li>
           ))}
-          {accounts.length > (limit || 5) && <li>...</li>}
         </ul>
       }
     </div>

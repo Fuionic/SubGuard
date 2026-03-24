@@ -16,17 +16,22 @@ function PasswordManager() {
   const [errorHeader, setErrorHeader] = useState("");
   const [revealPasswords, setRevealPasswords] = useState(false);
   const [showUnlockPassword, setShowUnlockPassword] = useState(false);
+  const [showFormPassword, setShowFormPassword] = useState(false); // Added missing state
   const [searchTerm, setSearchTerm] = useState("");
   const [service, setService] = useState("");
   const [password, setPassword] = useState("");
   const [entries, setEntries] = useState([]);
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    const storedHash = localStorage.getItem("vault_master_hash");
+    if (!userId) return;
+    const storedHash = localStorage.getItem(`vault_master_hash_${userId}`);
     if (!storedHash) {
       setIsSetup(true);
+    } else {
+      setIsSetup(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (unlocked) {
@@ -35,7 +40,8 @@ function PasswordManager() {
   }, [unlocked]);
 
   async function loadVault() {
-    const data = await getEntries();
+    if (!userId) return;
+    const data = await getEntries(userId);
     setEntries(data);
   }
 
@@ -53,14 +59,14 @@ function PasswordManager() {
       return;
     }
     const hash = hashPassword(masterPassword);
-    localStorage.setItem("vault_master_hash", hash);
+    localStorage.setItem(`vault_master_hash_${userId}`, hash);
     setIsSetup(false);
     setUnlocked(true);
     setErrorHeader("");
   };
 
   const handleUnlock = () => {
-    const storedHash = localStorage.getItem("vault_master_hash");
+    const storedHash = localStorage.getItem(`vault_master_hash_${userId}`);
     const enteredHash = hashPassword(masterPassword);
     if (enteredHash === storedHash) {
       setUnlocked(true);
@@ -93,7 +99,7 @@ function PasswordManager() {
       service,
       password: encrypted
     };
-    await saveEntry(entry);
+    await saveEntry(entry, userId);
     loadVault();
     setService("");
     setPassword("");

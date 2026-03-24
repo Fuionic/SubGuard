@@ -611,6 +611,10 @@ p {
   .sidebar.collapsed {
     transform: translateX(-100%);
     width: 260px; /* Don't shrink to 80px on mobile, hide completely */
+    box-shadow: none;
+  }
+  .sidebar:not(.collapsed) {
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
   }
   .topbar {
     padding: 1rem;

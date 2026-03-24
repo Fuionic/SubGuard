@@ -11,23 +11,89 @@ import AddSubscription from '../Subscriptions/AddSubscription';
 import LinkedAccountsList from '../LinkedAccounts/LinkedAccountsList';
 import AddLinkedAccount from '../LinkedAccounts/AddLinkedAccount';
 import PasswordManager from '../passwordManager/PasswordManager';
+import Settings from '../Settings/Settings';
 import './Dashboard.css';
 
 
 
 function Dashboard() {
   const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
+  const [activeView, setActiveView] = useState('dashboard');
   const [showAddSubscriptionModal, setShowAddSubscriptionModal] = useState(false);
   const [showAddLinkedAccountModal, setShowAddLinkedAccountModal] = useState(false);
   const [showPasswordVault, setShowPasswordVault] = useState(false);
+  const [userName, setUserName] = useState(localStorage.getItem('username') || 'User');
+  const userId = localStorage.getItem('userId');
   const userEmail = localStorage.getItem('userId') || 'User';
 
-  return (
+  React.useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/settings/${userId}`);
+        const data = await response.json();
+        if (data && data.name) {
+          setUserName(data.name);
+          localStorage.setItem('username', data.name);
+        }
+      } catch (err) {
+        console.error("Error fetching user name:", err);
+      }
+    };
+    if (userId) fetchUserName();
+  }, [userId, activeView]); // Re-fetch name when returning from settings
 
+  const renderContent = () => {
+    switch (activeView) {
+      case 'subscriptions':
+        return (
+          <section className="view-section">
+            <h2>My Subscriptions</h2>
+            <SubscriptionList limit={100} />
+          </section>
+        );
+      case 'accounts':
+        return (
+          <section className="view-section">
+            <h2>Linked Accounts</h2>
+            <LinkedAccountsList />
+          </section>
+        );
+      case 'settings':
+        return <Settings />;
+      case 'updates':
+        return (
+          <section className="view-section">
+            <h2>Future Updates</h2>
+            <p>Upcoming features and roadmaps...</p>
+          </section>
+        );
+      default:
+        return (
+          <>
+            <Overview />
+            <SpendingChart />
+            <SubscriptionStats />
+            <section className="alert">
+              <span className="alert-icon">⚠️</span>
+              <span className="alert-text">2 subscriptions expiring in 5 days</span>
+              <a href="#subscriptions" className="alert-link" onClick={() => setActiveView('subscriptions')}>View Details</a>
+            </section>
+            <RecentActivity />
+          </>
+        );
+    }
+  };
+
+  return (
     <div className="dashboard-container">
       <Topbar userEmail={userEmail} collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="dashboard-body">
-        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <Sidebar 
+          collapsed={collapsed} 
+          setCollapsed={setCollapsed} 
+          activeView={activeView} 
+          setActiveView={setActiveView} 
+        />
         <div className="dashboard-main">
           <div className="dashboard-content">
             {/* Quick Actions Bar - 3 buttons */}
@@ -48,25 +114,11 @@ function Dashboard() {
 
             {/* Context */}
             <section className="context">
-              <h1>Welcome back, User 👋</h1>
-              <p>You're managing 6 subscriptions and 3 linked accounts</p>
+              <h1>Welcome back, {userName} 👋</h1>
+              <p>You're managing your digital life with SubGuard</p>
             </section>
 
-            <Overview />
-            <SpendingChart />
-
-            <SubscriptionStats />
-
-            {/* Alert */}
-            <section className="alert">
-              <span className="alert-icon">⚠️</span>
-              <span className="alert-text">2 subscriptions expiring in 5 days</span>
-              <a href="#subscriptions" className="alert-link">View Details</a>
-            </section>
-
-            <RecentActivity />
-
-            {/* Preview sections removed as requested */}
+            {renderContent()}
           </div>
         </div>
       </div>

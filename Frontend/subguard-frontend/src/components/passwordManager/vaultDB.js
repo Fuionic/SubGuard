@@ -20,32 +20,32 @@ export function openDB() {
   });
 }
 
-export async function saveEntry(entry) {
-
+export async function saveEntry(entry, userId) {
   const db = await openDB();
-
   const tx = db.transaction(STORE_NAME, "readwrite");
-
   const store = tx.objectStore(STORE_NAME);
-
-  store.put(entry);
-
-  return tx.complete;
+  
+  // Attach userId for multi-user isolation on same browser
+  store.put({ ...entry, userId: String(userId) });
+  
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
 }
 
-export async function getEntries() {
-
+export async function getEntries(userId) {
   const db = await openDB();
-
   const tx = db.transaction(STORE_NAME, "readonly");
-
   const store = tx.objectStore(STORE_NAME);
 
   return new Promise((resolve) => {
-
     const request = store.getAll();
-
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      // Filter entries relevant to current logged-in user
+      const filtered = request.result.filter(entry => entry.userId === String(userId));
+      resolve(filtered);
+    };
   });
 }
 
