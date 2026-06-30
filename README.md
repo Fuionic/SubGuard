@@ -16,9 +16,8 @@ In today’s digital world:
 
 ---
 
-## Key Features (Planned)
+## Key Features
 
-### MVP (Phase 1)
 - **Subscription Tracker**  
   - Track service name, cost, renewal date.  
   - Send reminders before auto-renewals or trial expiry.  
@@ -33,7 +32,7 @@ In today’s digital world:
   - Notify user if accounts are unused for a configurable period.  
   - ✅ Completed  
 
-### Future Enhancements (Phase 2+)
+### Future Enhancements 
 - **Privacy Cleaner** → Identify unused accounts, suggest cleanup.  
 - **Warranty & Bill Vault** → Store receipts, track warranty expiry.  
 - **Smart Analytics** → Monitor spending, suggest alternatives.  
@@ -62,7 +61,7 @@ In today’s digital world:
 - **Security:** Spring Security basic authentication  
 
 ---
-## Backend Status (MVP – Completed)
+## Backend Status 
 
 The backend for SubGuard MVP has been implemented and tested using Postman.
 
@@ -101,11 +100,17 @@ DB_PASSWORD=you
 
 
 
+### UI Screenshots
+![Landing Page](screenshots/Landing.png)  
+![Dashboard](screenshots/Dashboard.png)  
+![Subscription Management](screenshots/Subscription.png)  
+
 ### Postman Testing Screenshots
 ![Signup Endpoint](screenshots/Signup.png)  
 ![Login Endpoint](screenshots/Login.png)  
 ![Add Subscription](screenshots/Add-Subscription.png)  
 ![Get Unused Account](screenshots/get-unused-account.png)  
 ![Linked Accounts](screenshots/Add-Linked-account.png)  
+
 
 
