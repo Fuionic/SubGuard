@@ -30,6 +30,8 @@ bin/
 *.war
 *.ear
 .factorypath
+.idea
+.errorhandling
 
 # Editor directories and files
 .vscode/

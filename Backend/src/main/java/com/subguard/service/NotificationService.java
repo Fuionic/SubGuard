@@ -49,9 +49,7 @@ public class NotificationService {
             if (!user.isNotificationsEnabled()) continue;
             
             String targetEmail = user.getNotificationEmail() != null ? user.getNotificationEmail() : user.getEmail();
-
             List<Subscription> subs = subscriptionRepository.findByUser(user);
-
             for (Subscription sub : subs) {
 
                 // ---------- Trial logic (existing) ----------
@@ -144,7 +142,6 @@ public class NotificationService {
             if (!user.isNotificationsEnabled()) continue;
 
             String targetEmail = user.getNotificationEmail() != null ? user.getNotificationEmail() : user.getEmail();
-
             List<LinkedAccount> accounts = linkedAccountRepository.findByUser(user);
 
             for (LinkedAccount acc : accounts) {

@@ -3,6 +3,7 @@ package com.subguard.controller;
 import com.subguard.model.User;
 import com.subguard.repository.Userrepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -14,6 +15,12 @@ public class UserController {
     @Autowired
     private Userrepository userrepository;
 
+    private final PasswordEncoder passwordEncoder;
+
+    public UserController(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     // Signup
     @PostMapping("/signup")
     public String signup(@RequestBody User user){
@@ -24,6 +31,7 @@ public class UserController {
         }
 
         user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userrepository.save(user);
         return String.valueOf(savedUser.getId());
     }
@@ -39,8 +47,10 @@ public class UserController {
         }
 
         return userrepository.findByEmail(email)
-                .filter(u -> u.getPassword() != null && u.getPassword().equals(password))
+                .filter(u -> u.getPassword() != null && passwordEncoder.matches(password, u.getPassword()))
                 .map(u -> String.valueOf(u.getId()))
                 .orElse("Invalid credentials");
     }
+
+
 }
