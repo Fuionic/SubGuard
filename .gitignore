@@ -32,6 +32,8 @@ bin/
 .factorypath
 .idea
 .errorhandling
+NotificationService
+
 
 # Editor directories and files
 .vscode/
@@ -58,3 +60,9 @@ temp/
 tmp/
 .agent/
 .agents/
+application.properties
+application*.yml
+NotificationService.java
+NotificationService.class
+.errorhandling
+errorhandling/
