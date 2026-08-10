@@ -1,8 +1,10 @@
 package com.subguard.Util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -23,5 +25,26 @@ public class JwtUtil {
                 .signWith(secret, SignatureAlgorithm.HS256)
                 .compact();
 
+    }
+
+    public String extractUsername(String token){
+        return extractClaims(token).getSubject();
+    }
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+
+    public boolean validate(String username, UserDetails userDetails, String token) {
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    public boolean isTokenExpired(String token){
+       return extractClaims(token).getExpiration().before(new Date());
     }
 }
