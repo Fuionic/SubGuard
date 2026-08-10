@@ -1,56 +1,28 @@
 package com.subguard.controller;
 
 import com.subguard.model.User;
-import com.subguard.repository.Userrepository;
+import com.subguard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
+    private final UserService userService;
+
     @Autowired
-    private Userrepository userrepository;
-
-    private final PasswordEncoder passwordEncoder;
-
-    public UserController(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    // Signup
     @PostMapping("/signup")
     public String signup(@RequestBody User user){
-        String email = user.getEmail();
-        Optional<User> existingUser = userrepository.findByEmail(email);
-        if(existingUser.isPresent()){
-            return "Email already registered";
-        }
-
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userrepository.save(user);
-        return String.valueOf(savedUser.getId());
+        return userService.signup(user);
     }
 
-    // Login
     @PostMapping("/login")
     public String login(@RequestBody User user){
-        String email = user.getEmail();
-        String password = user.getPassword();
-
-        if (password == null || password.isBlank()) {
-            return "Password is required";
-        }
-
-        return userrepository.findByEmail(email)
-                .filter(u -> u.getPassword() != null && passwordEncoder.matches(password, u.getPassword()))
-                .map(u -> String.valueOf(u.getId()))
-                .orElse("Invalid credentials");
+        return userService.login(user);
     }
-
-
 }
