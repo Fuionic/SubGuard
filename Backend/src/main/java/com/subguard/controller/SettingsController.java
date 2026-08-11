@@ -1,6 +1,6 @@
 package com.subguard.controller;
 
-import com.subguard.model.User;
+import com.subguard.DTO.UserDTO;
 import com.subguard.service.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +19,16 @@ public class SettingsController {
         this.settingsService = settingsService;
     }
 
-    // Get current settings
     @GetMapping("/{userId}")
-    public Optional<User> getSettings(@PathVariable Long userId) {
+    public Optional<UserDTO> getSettings(@PathVariable Long userId) {
         return settingsService.getSettings(userId);
     }
 
-    // Update profile (Name, Notifications)
     @PutMapping("/{userId}")
-    public String updateSettings(@PathVariable Long userId, @RequestBody User updatedUser) {
+    public String updateSettings(@PathVariable Long userId, @RequestBody UserDTO updatedUser) {
         return settingsService.updateSettings(userId, updatedUser);
     }
 
-    // Wipe all data (Subscriptions and Linked Accounts)
     @DeleteMapping("/wipe-data/{userId}")
     public String wipeData(@PathVariable Long userId) {
         return settingsService.wipeData(userId);

@@ -1,5 +1,6 @@
 package com.subguard.service;
 
+import com.subguard.DTO.LinkedAccountDTO;
 import com.subguard.model.LinkedAccount;
 import com.subguard.model.User;
 import com.subguard.repository.LinkedAccountRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LinkedAccountService {
@@ -22,9 +24,11 @@ public class LinkedAccountService {
         this.userrepository = userrepository;
     }
 
-    public LinkedAccount addLinkedAccount(Long userId, LinkedAccount account) {
+    public LinkedAccountDTO addLinkedAccount(Long userId, LinkedAccountDTO accountDTO) {
         User user = userrepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        LinkedAccount account = convertToEntity(accountDTO);
 
         if (account.getLastUsedDate() == null) {
             account.setLastUsedDate(LocalDate.now());
@@ -35,45 +39,63 @@ public class LinkedAccountService {
         }
 
         account.setUser(user);
-        return linkedAccountRepository.save(account);
+        LinkedAccount saved = linkedAccountRepository.save(account);
+        return convertToDTO(saved);
     }
 
-    public List<LinkedAccount> getUserAccounts(Long userId) {
+    public List<LinkedAccountDTO> getUserAccounts(Long userId) {
         User user = userrepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return linkedAccountRepository.findByUser(user);
+        return linkedAccountRepository.findByUser(user).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<LinkedAccount> getUnusedAccounts(Long userId) {
+    public List<LinkedAccountDTO> getUnusedAccounts(Long userId) {
         User user = userrepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         LocalDate today = LocalDate.now();
 
-        return linkedAccountRepository.findByUser(user)
-                .stream()
+        return linkedAccountRepository.findByUser(user).stream()
                 .filter(acc -> acc.getNextReviewDate() != null &&
                         !acc.getNextReviewDate().isAfter(today))
-                .toList();
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public LinkedAccount confirmNotUsing(Long accountId) {
+    public LinkedAccountDTO confirmNotUsing(Long accountId) {
         LinkedAccount account = linkedAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         account.setReviewCompleted(true);
         System.out.println("User should logout from: " + account.getServiceName());
-        return linkedAccountRepository.save(account);
+        return convertToDTO(linkedAccountRepository.save(account));
     }
 
-    public LinkedAccount confirmUsage(Long accountId) {
+    public LinkedAccountDTO confirmUsage(Long accountId) {
         LinkedAccount account = linkedAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         account.setLastUsedDate(LocalDate.now());
         account.setReviewCompleted(false);
+        return convertToDTO(linkedAccountRepository.save(account));
+    }
 
-        return linkedAccountRepository.save(account);
+    private LinkedAccountDTO convertToDTO(LinkedAccount acc) {
+        return new LinkedAccountDTO(acc.getId(), acc.getAccountEmail(), acc.getServiceName(), acc.getLastUsedDate(), acc.getNotifyAfterMonths(), acc.getNextReviewDate(), acc.isReviewCompleted());
+    }
+
+    private LinkedAccount convertToEntity(LinkedAccountDTO dto) {
+        LinkedAccount acc = new LinkedAccount();
+        acc.setId(dto.getId());
+        acc.setAccountEmail(dto.getAccountEmail());
+        acc.setServiceName(dto.getServiceName());
+        acc.setLastUsedDate(dto.getLastUsedDate());
+        acc.setNotifyAfterMonths(dto.getNotifyAfterMonths());
+        acc.setNextReviewDate(dto.getNextReviewDate());
+        acc.setReviewCompleted(dto.isReviewCompleted());
+        return acc;
     }
 }

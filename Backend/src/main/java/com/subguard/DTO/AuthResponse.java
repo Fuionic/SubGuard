@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Authentication response DTO for session-based authentication
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -1,5 +1,6 @@
 package com.subguard.service;
 
+import com.subguard.DTO.UserDTO;
 import com.subguard.model.User;
 import com.subguard.repository.LinkedAccountRepository;
 import com.subguard.repository.SubscriptionRepository;
@@ -26,18 +27,18 @@ public class SettingsService {
         this.linkedAccountRepository = linkedAccountRepository;
     }
 
-    public Optional<User> getSettings(Long userId) {
-        return userrepository.findById(userId);
+    public Optional<UserDTO> getSettings(Long userId) {
+        return userrepository.findById(userId).map(this::convertToDTO);
     }
 
-    public String updateSettings(Long userId, User updatedUser) {
+    public String updateSettings(Long userId, UserDTO updatedUser) {
         return userrepository.findById(userId).map(user -> {
             user.setName(updatedUser.getName());
             user.setNotificationsEnabled(updatedUser.isNotificationsEnabled());
             user.setNotificationEmail(updatedUser.getNotificationEmail());
             userrepository.save(user);
             return "Settings updated successfully";
-        }).orElse("User not found");
+        }).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Transactional
@@ -46,6 +47,10 @@ public class SettingsService {
             subscriptionRepository.deleteByUser(user);
             linkedAccountRepository.deleteByUser(user);
             return "All data wiped successfully";
-        }).orElse("User not found");
+        }).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.isNotificationsEnabled(), user.getNotificationEmail());
     }
 }

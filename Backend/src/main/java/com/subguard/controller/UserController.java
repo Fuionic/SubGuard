@@ -1,6 +1,7 @@
 package com.subguard.controller;
 
-import com.subguard.model.User;
+import com.subguard.DTO.LoginRequest;
+import com.subguard.DTO.SignupRequest;
 import com.subguard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +18,12 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody User user){
-        return userService.signup(user);
+    public String signup(@RequestBody SignupRequest request){
+        return userService.signup(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user){
-        return userService.login(user);
+    public String login(@RequestBody LoginRequest request){
+        return userService.login(request);
     }
 }

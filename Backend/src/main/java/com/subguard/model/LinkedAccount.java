@@ -17,9 +17,9 @@ public class LinkedAccount {
 
     private LocalDate lastUsedDate;
 
-    private int notifyAfterMonths; // review interval
+    private int notifyAfterMonths;
 
-    private LocalDate nextReviewDate; // // 🔥 new field
+    private LocalDate nextReviewDate;
 
     private boolean reviewCompleted = false;
 
@@ -28,22 +28,21 @@ public class LinkedAccount {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 🔥 Auto-calculate nextReviewDate before saving
     @PrePersist
     @PreUpdate
     public void calculateNextReviewDate() {
         if (lastUsedDate != null && notifyAfterMonths > 0) {
             this.nextReviewDate = lastUsedDate.plusMonths(notifyAfterMonths);
-//            this.reviewCompleted = false; // reset for next cycle
+//
         }
     }
 
 
-    // Getters and Setters
-
     public Long getId() {
         return id;
     }
+
+    public void setId(Long id){ this.id = id;}
 
     public String getAccountEmail() {
         return accountEmail;
