@@ -14,7 +14,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private final long Expiration_Time = 1000 * 60* 60;
-    private final String key = "YourKey";
+    private final String key = "asdfghjklzxcvbnmqwertyuiop123456";
     private  final SecretKey secret = Keys.hmacShaKeyFor(key.getBytes());
 
     public String generateToken(String username){

@@ -1,7 +1,9 @@
 package com.subguard.service;
 
+import com.subguard.DTO.AuthResponse;
 import com.subguard.DTO.LoginRequest;
 import com.subguard.DTO.SignupRequest;
+import com.subguard.Util.JwtUtil;
 import com.subguard.model.User;
 import com.subguard.repository.Userrepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,56 +17,62 @@ public class UserService {
 
     private final Userrepository userrepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserService(Userrepository userrepository, PasswordEncoder passwordEncoder) {
+    public UserService(Userrepository userrepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userrepository = userrepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
-    public String signup(SignupRequest request) {
+    public AuthResponse signup(SignupRequest request) {
         String email = request.getEmail();
         Optional<User> existingUser = userrepository.findByEmail(email);
         if(existingUser.isPresent()){
-            return "Email already registered";
+            return new AuthResponse(null, null, "Email already registered");
         }
 
         User user = new User();
-        user.setName(request.getName());
-        user.setUsername(request.getUsername());
+        if (request.getUsername() != null && !request.getUsername().isBlank()) {
+            user.setName(request.getUsername());
+        } else {
+            user.setName(request.getName());
+        }
         user.setEmail(request.getEmail());
         
-        // Ensure confirmPassword matches (basic validation)
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
+        if (request.getConfirmPassword() != null && !request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Passwords do not match");
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         User savedUser = userrepository.save(user);
-        return String.valueOf(savedUser.getId());
+        
+        String token = jwtUtil.generateToken(savedUser.getUsername());
+        return new AuthResponse(token, savedUser.getId(), "Success");
     }
 
-    public String login(LoginRequest request) {
-        // Their original UserController checked by email despite LoginRequest having 'username'. 
-        // We will try finding by email first as that was the original implementation.
+    public AuthResponse login(LoginRequest request) {
+      
         String identifier = request.getUsername(); 
         String password = request.getPassword();
 
         if (password == null || password.isBlank()) {
-            return "Password is required";
+            return new AuthResponse(null, null, "Password is required");
         }
 
-        // Try email first
         Optional<User> userOpt = userrepository.findByEmail(identifier);
-        
-        // If not found by email, try username
+
         if (userOpt.isEmpty()) {
             userOpt = userrepository.findByUsername(identifier);
         }
 
         return userOpt
                 .filter(u -> u.getPassword() != null && passwordEncoder.matches(password, u.getPassword()))
-                .map(u -> String.valueOf(u.getId()))
-                .orElse("Invalid credentials");
+                .map(u -> {
+                    String token = jwtUtil.generateToken(u.getUsername());
+                    return new AuthResponse(token, u.getId(), "Success");
+                })
+                .orElse(new AuthResponse(null, null, "Invalid credentials"));
     }
 }

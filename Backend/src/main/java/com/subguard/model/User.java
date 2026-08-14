@@ -21,9 +21,11 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    private String role;
+    private String role = "USER";
 
     private String password;
+    
+    private boolean enabled = true;
     
     private boolean notificationsEnabled = true; // default to true
     
@@ -89,6 +91,15 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public List<Subscription> getSubscriptions() {

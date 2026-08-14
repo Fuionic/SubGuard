@@ -1,5 +1,6 @@
 package com.subguard.controller;
 
+import com.subguard.DTO.AuthResponse;
 import com.subguard.DTO.LoginRequest;
 import com.subguard.DTO.SignupRequest;
 import com.subguard.service.UserService;
@@ -18,12 +19,12 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody SignupRequest request){
+    public AuthResponse signup(@RequestBody SignupRequest request){
         return userService.signup(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request){
+    public AuthResponse login(@RequestBody LoginRequest request){
         return userService.login(request);
     }
 }

@@ -2,6 +2,7 @@ package com.subguard.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class SignupRequest {
     private String name;
     private String username;
