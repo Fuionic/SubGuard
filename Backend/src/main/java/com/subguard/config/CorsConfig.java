@@ -19,6 +19,12 @@ public class CorsConfig {
                         .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                         .allowCredentials(true);
             }
+
+//            @Override
+//            public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+//                registry.addResourceHandler("/swagger-ui/**")
+//                        .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/");
+//            }
         };
     }
 }
