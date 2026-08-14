@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/apiClient';
 import './Settings.css';
 
 const Settings = () => {
@@ -15,7 +15,7 @@ const Settings = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/settings/${userId}`);
+                const response = await apiClient.get(`/settings/${userId}`);
                 if (response.data) {
                     setSettings({
                         name: response.data.name || '',
@@ -25,7 +25,6 @@ const Settings = () => {
                 }
             } catch (err) {
                 console.error("Error fetching settings:", err);
-                setMessage({ text: 'Failed to load settings', type: 'error' });
             } finally {
                 setIsLoading(false);
             }
@@ -38,7 +37,7 @@ const Settings = () => {
         e.preventDefault();
         setMessage({ text: '', type: '' });
         try {
-            const response = await axios.put(`http://localhost:8080/api/settings/${userId}`, settings);
+            const response = await apiClient.put(`/settings/${userId}`, settings);
             setMessage({ text: response.data, type: 'success' });
             setTimeout(() => setMessage({ text: '', type: '' }), 3000);
         } catch (err) {
@@ -49,7 +48,7 @@ const Settings = () => {
     const handleWipeData = async () => {
         if (window.confirm("Are you absolutely sure? This will delete all your subscriptions and linked accounts forever!")) {
             try {
-                const response = await axios.delete(`http://localhost:8080/api/settings/wipe-data/${userId}`);
+                const response = await apiClient.delete(`/settings/wipe-data/${userId}`);
                 setMessage({ text: response.data, type: 'success' });
                 // Optionally clear local state or show a more dramatic success message
             } catch (err) {

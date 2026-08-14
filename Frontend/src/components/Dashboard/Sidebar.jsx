@@ -1,9 +1,11 @@
 import React from 'react';
-import { FaHome, FaCreditCard, FaLink, FaCog, FaSignOutAlt, FaBars, FaRocket } from 'react-icons/fa';
+import { FaSignOutAlt, FaBars, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ collapsed, setCollapsed, activeView, setActiveView }) => {
   const navigate = useNavigate();
+  const userName = localStorage.getItem('username') || 'User';
+  const avatarUrl = `https://ui-avatars.com/api/?name=${userName}&background=333&color=fff&size=32`;
 
   const handleLogout = () => {
     localStorage.removeItem('userId');
@@ -20,28 +22,43 @@ const Sidebar = ({ collapsed, setCollapsed, activeView, setActiveView }) => {
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        {/* Logo removed as requested */}
+        <div className="sidebar-brand">
+          <div className="sidebar-logo-text">SubGuard</div>
+          <div className="sidebar-subtitle">Your digital life, organised</div>
+        </div>
         <FaBars className="toggle-btn" onClick={() => setCollapsed(!collapsed)} />
       </div>
 
       <ul className="sidebar-menu">
         <li className={activeView === 'dashboard' ? 'active' : ''} onClick={() => handleItemClick('dashboard')}>
-          <FaHome /> <span>Dashboard</span>
+          <span className="dot dot-green"></span> <span>Overview</span>
         </li>
         <li className={activeView === 'subscriptions' ? 'active' : ''} onClick={() => handleItemClick('subscriptions')}>
-          <FaCreditCard /> <span>Subscriptions</span>
+          <span className="dot dot-green"></span> <span>Subscriptions</span>
         </li>
         <li className={activeView === 'accounts' ? 'active' : ''} onClick={() => handleItemClick('accounts')}>
-          <FaLink /> <span>Linked Accounts</span>
+          <span className="dot dot-orange"></span> <span>Accounts</span>
+        </li>
+        <li className={activeView === 'vault' ? 'active' : ''} style={{opacity: 0.5, cursor: 'not-allowed'}}>
+          <span className="dot dot-blue"></span> <span>Vault (Coming Soon)</span> <FaLock style={{marginLeft: 'auto', fontSize: '0.8rem', color: '#a5a5a5'}} />
         </li>
         <li className={activeView === 'settings' ? 'active' : ''} onClick={() => handleItemClick('settings')}>
-          <FaCog /> <span>Settings</span>
+          <span className="dot dot-grey"></span> <span>Settings</span>
         </li>
-        <li className={activeView === 'updates' ? 'active' : ''} onClick={() => handleItemClick('updates')}>
-          <FaRocket /> <span>Future Updates</span>
-        </li>
-        <li className="logout" onClick={handleLogout}><FaSignOutAlt /> <span>Logout</span></li>
       </ul>
+      
+      <div className="sidebar-footer">
+        <div className="sidebar-profile">
+          <img src={avatarUrl} alt="User Avatar" className="sidebar-avatar" />
+          <div className="sidebar-user-info">
+            <span className="sidebar-username">{userName}</span>
+            <span className="sidebar-plan">Free plan</span>
+          </div>
+        </div>
+        <div className="sidebar-logout" onClick={handleLogout} title="Logout">
+          <FaSignOutAlt />
+        </div>
+      </div>
     </div>
   );
 };

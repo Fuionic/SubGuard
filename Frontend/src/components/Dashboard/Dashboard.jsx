@@ -12,6 +12,7 @@ import LinkedAccountsList from '../LinkedAccounts/LinkedAccountsList';
 import AddLinkedAccount from '../LinkedAccounts/AddLinkedAccount';
 import PasswordManager from '../passwordManager/PasswordManager';
 import Settings from '../Settings/Settings';
+import apiClient from '../../api/apiClient';
 import './Dashboard.css';
 
 
@@ -29,8 +30,8 @@ function Dashboard() {
   React.useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/settings/${userId}`);
-        const data = await response.json();
+        const response = await apiClient.get(`/settings/${userId}`);
+        const data = response.data;
         if (data && data.name) {
           setUserName(data.name);
           localStorage.setItem('username', data.name);
@@ -69,54 +70,43 @@ function Dashboard() {
         );
       default:
         return (
-          <>
-            <Overview />
-            <SpendingChart />
-            <SubscriptionStats />
-            <section className="alert">
-              <span className="alert-icon">⚠️</span>
-              <span className="alert-text">2 subscriptions expiring in 5 days</span>
-              <a href="#subscriptions" className="alert-link" onClick={() => setActiveView('subscriptions')}>View Details</a>
-            </section>
-            <RecentActivity />
-          </>
+          <Overview />
         );
     }
   };
 
+  React.useEffect(() => {
+    const handleAddSub = () => setShowAddSubscriptionModal(true);
+    const handleAddAcc = () => setShowAddLinkedAccountModal(true);
+    
+    document.addEventListener('openAddSubscription', handleAddSub);
+    document.addEventListener('openAddAccount', handleAddAcc);
+    
+    return () => {
+      document.removeEventListener('openAddSubscription', handleAddSub);
+      document.removeEventListener('openAddAccount', handleAddAcc);
+    };
+  }, []);
+
   return (
-    <div className="dashboard-container">
-      <Topbar userEmail={userEmail} collapsed={collapsed} setCollapsed={setCollapsed} />
-      <div className="dashboard-body">
-        <Sidebar 
-          collapsed={collapsed} 
-          setCollapsed={setCollapsed} 
-          activeView={activeView} 
-          setActiveView={setActiveView} 
-        />
+    <div className="dashboard-container" style={{flexDirection: 'row'}}>
+      <Sidebar 
+        collapsed={collapsed} 
+        setCollapsed={setCollapsed} 
+        activeView={activeView} 
+        setActiveView={setActiveView} 
+      />
+      <div className="dashboard-body" style={{flexDirection: 'column'}}>
+        <Topbar userEmail={userEmail} collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="dashboard-main">
           <div className="dashboard-content">
-            {/* Quick Actions Bar - 3 buttons */}
-            <div className="primary-actions-bar">
-              <button className="btn-primary" onClick={() => setShowAddSubscriptionModal(true)}>
-                <FaPlus className="icon" />
-                Add Subscription
-              </button>
-              <button className="btn-primary" onClick={() => setShowAddLinkedAccountModal(true)}>
-                <FaLink className="icon" />
-                Add Linked Account
-              </button>
-              <button className="btn-primary" onClick={() => setShowPasswordVault(true)}>
-                <FaLock className="icon" />
-                Open Vault
-              </button>
-            </div>
-
             {/* Context */}
-            <section className="context">
-              <h1>Welcome back, {userName} 👋</h1>
-              <p>You're managing your digital life with SubGuard</p>
-            </section>
+            {activeView === 'dashboard' && (
+              <section className="context" style={{display: 'none'}}>
+                <h1>Welcome back, {userName} 👋</h1>
+                <p>You're managing your digital life with SubGuard</p>
+              </section>
+            )}
 
             {renderContent()}
           </div>

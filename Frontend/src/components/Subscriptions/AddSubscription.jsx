@@ -16,7 +16,12 @@ function AddSubscription({ onClose }) {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await apiClient.post(`/subscriptions/user/${userId}`, form);
+      const payload = { ...form };
+      if (!payload.renewalDate) payload.renewalDate = null;
+      if (!payload.trialEndDate) payload.trialEndDate = null;
+      if (!payload.price) payload.price = 0;
+      
+      await apiClient.post(`/subscriptions/user/${userId}`, payload);
       alert('Subscription added');
       setForm({ name: '', price: '', renewalDate: '', isFreeTrial: false, trialEndDate: '', frequency: 'MONTHLY' });
       if (onClose) onClose();

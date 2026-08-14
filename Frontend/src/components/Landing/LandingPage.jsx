@@ -1,9 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import "./LandingPage.css";
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function LandingPage() {
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   // Simple scroll intersection observer for fade-up animations
   useEffect(() => {
@@ -27,18 +35,16 @@ function LandingPage() {
 
   return (
     <div className="landing-container">
-      {/* Ambient background glows */}
-      <div className="bg-glow bg-glow-1"></div>
-      <div className="bg-glow bg-glow-2"></div>
-      <div className="bg-glow bg-glow-3"></div>
-      
       <nav className="navbar fade-in">
         <div className="nav-content">
           <div className="logo">
-            <div className="logo-icon"></div>
-            SubGuard<span>.</span>
+            <div className="logo-icon" style={{backgroundColor: 'var(--accent-green)', borderRadius: '4px', width: '20px', height: '20px'}}></div>
+            SubGuard<span style={{color: 'var(--accent-green)'}}>.</span>
           </div>
           <div className="nav-buttons">
+            <div className="nav-theme-toggle" onClick={toggleTheme} style={{cursor: 'pointer'}} aria-label="Toggle Theme">
+              {theme === 'light' ? '🌙' : '☀️'}
+            </div>
             <button onClick={() => navigate("/login")} className="login-btn">Log in</button>
             <button onClick={() => navigate("/signup")} className="signup-btn">Sign up free</button>
           </div>
@@ -50,10 +56,15 @@ function LandingPage() {
         <div className="hero-wrapper">
           <section className="hero">
             <div className="hero-content fade-in">
-              <div className="badge">✨ The Future of Subscription Management</div>
-              <h1>Take Control of Your Digital Subscriptions</h1>
+              <div className="badge">
+                <span className="dot dot-green" style={{marginRight: '8px'}}></span>
+                The Future of Subscription Management
+              </div>
+              <h1>Organise Your<br/><span className="text-dim">Digital Life</span></h1>
               <p>
-                Track renewals, manage trials, and monitor linked accounts — all from one beautifully secure, private dashboard.
+                Track renewals, manage linked accounts, and store local<br/>
+                vault records — all wrapped up in one gorgeous, dark-<br/>
+                themed dashboard.
               </p>
               <div className="cta-group">
                 <button onClick={() => navigate("/signup")} className="cta-btn primary">
