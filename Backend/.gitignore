@@ -34,5 +34,3 @@ application.properties
 application*.yml
 NotificationService.java
 NotificationService.class
-.errorhandling
-errorhandling/
