@@ -31,7 +31,7 @@ bin/
 *.ear
 .factorypath
 .idea
-.errorhandling
+
 NotificationService
 
 
@@ -64,5 +64,4 @@ application.properties
 application*.yml
 NotificationService.java
 NotificationService.class
-.errorhandling
-errorhandling/
+.env
