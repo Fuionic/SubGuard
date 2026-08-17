@@ -11,11 +11,6 @@ The user interface features a modern, responsive glassmorphic layout built with 
 
 <img src="screenshots/Landing.png" alt="Landing" width="100%" />
 
-**Login & Signup**
-
-<img src="screenshots/Login.png" alt="Login" width="49%" />
-<img src="screenshots/Signup.png" alt="Signup" width="49%" />
-
 **Dashboard**
 
 <img src="screenshots/Dashboard.png" alt="Dashboard" width="100%" />
@@ -71,45 +66,28 @@ graph TD
 
 ## Running the Project Locally
 
+The easiest and recommended way to run the project is using Docker.
+
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/Fuionic/SubGuard.git
 cd SubGuard
 ```
 
-### 2. Database Setup (MySQL)
-```sql
-CREATE DATABASE subguard;
-CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON subguard.* TO 'your_username'@'localhost';
-FLUSH PRIVILEGES;
+### 2. Configure Environment Variables
+Create the  environment file and update it with your desired database credentials:
+
+
+### 3. Run with Docker Compose
+```bash
+docker-compose up -d --build
 ```
+This will automatically:
+- Start a MySQL database and configure it with your credentials.
+- Build and start the Spring Boot backend on port `8080`.
+- Build and serve the React frontend on port `3000`.
 
-### 3. Configure Environment Variables
-In your IDE run configuration or `application.properties`:
-```properties
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
-
----
-
-## AWS Deployment (Free Tier)
-You can deploy SubGuard completely free using the **AWS 12-Month Free Tier**:
-
-1. **Database:** Use **Amazon RDS (MySQL)**
-   - Provision a `db.t3.micro` or `db.t4g.micro` instance (Free Tier eligible).
-   - Update `application.properties` with the provided endpoint.
-
-2. **Backend:** Use **Amazon EC2**
-   - Launch a `t2.micro` or `t3.micro` EC2 instance.
-   - Install Java, upload your packaged Spring Boot `.jar`, and run it. 
-
-3. **Frontend:** Use **AWS Amplify**
-   - Update `apiClient.js` with your EC2 instance's IP address.
-   - Connect your GitHub repo to AWS Amplify for automatic, free React hosting and CI/CD.
-
-*(Note: Always set up an AWS Billing Alarm to avoid unexpected charges if you exceed the free tier limits).*
+You can now access the application at `http://localhost:3000`.
 
 ---
 
