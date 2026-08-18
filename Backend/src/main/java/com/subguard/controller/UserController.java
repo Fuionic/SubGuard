@@ -5,6 +5,8 @@ import com.subguard.DTO.LoginRequest;
 import com.subguard.DTO.SignupRequest;
 import com.subguard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,12 +21,14 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public AuthResponse signup(@RequestBody SignupRequest request){
-        return userService.signup(request);
+    public ResponseEntity<AuthResponse> signup(@RequestBody SignupRequest request){
+        AuthResponse response = userService.signup(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request){
-        return userService.login(request);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request){
+        AuthResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

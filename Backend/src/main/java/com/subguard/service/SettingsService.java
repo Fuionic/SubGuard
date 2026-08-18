@@ -1,6 +1,7 @@
 package com.subguard.service;
 
 import com.subguard.DTO.UserDTO;
+import com.subguard.errorhandling.GeneralException;
 import com.subguard.model.User;
 import com.subguard.repository.LinkedAccountRepository;
 import com.subguard.repository.SubscriptionRepository;
@@ -38,7 +39,7 @@ public class SettingsService {
             user.setNotificationEmail(updatedUser.getNotificationEmail());
             userrepository.save(user);
             return "Settings updated successfully";
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+        }).orElseThrow(() -> new GeneralException("User not found"));
     }
 
     @Transactional
@@ -47,7 +48,7 @@ public class SettingsService {
             subscriptionRepository.deleteByUser(user);
             linkedAccountRepository.deleteByUser(user);
             return "All data wiped successfully";
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+        }).orElseThrow(() -> new GeneralException("User not found"));
     }
 
     private UserDTO convertToDTO(User user) {

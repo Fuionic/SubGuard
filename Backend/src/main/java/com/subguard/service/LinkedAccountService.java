@@ -1,6 +1,7 @@
 package com.subguard.service;
 
 import com.subguard.DTO.LinkedAccountDTO;
+import com.subguard.errorhandling.LinkedAccountException;
 import com.subguard.model.LinkedAccount;
 import com.subguard.model.User;
 import com.subguard.repository.LinkedAccountRepository;
@@ -26,7 +27,7 @@ public class LinkedAccountService {
 
     public LinkedAccountDTO addLinkedAccount(Long userId, LinkedAccountDTO accountDTO) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new LinkedAccountException("User not found"));
 
         LinkedAccount account = convertToEntity(accountDTO);
 
@@ -45,7 +46,7 @@ public class LinkedAccountService {
 
     public List<LinkedAccountDTO> getUserAccounts(Long userId) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new LinkedAccountException("User not found"));
 
         return linkedAccountRepository.findByUser(user).stream()
                 .map(this::convertToDTO)
@@ -54,7 +55,7 @@ public class LinkedAccountService {
 
     public List<LinkedAccountDTO> getUnusedAccounts(Long userId) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new LinkedAccountException("User not found"));
 
         LocalDate today = LocalDate.now();
 
@@ -67,7 +68,7 @@ public class LinkedAccountService {
 
     public LinkedAccountDTO confirmNotUsing(Long accountId) {
         LinkedAccount account = linkedAccountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new LinkedAccountException("Account not found"));
 
         account.setReviewCompleted(true);
         System.out.println("User should logout from: " + account.getServiceName());
@@ -76,7 +77,7 @@ public class LinkedAccountService {
 
     public LinkedAccountDTO confirmUsage(Long accountId) {
         LinkedAccount account = linkedAccountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new LinkedAccountException("Account not found"));
 
         account.setLastUsedDate(LocalDate.now());
         account.setReviewCompleted(false);

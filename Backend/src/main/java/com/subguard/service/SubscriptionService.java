@@ -1,6 +1,7 @@
 package com.subguard.service;
 
 import com.subguard.DTO.SubscriptionDTO;
+import com.subguard.errorhandling.SubscriptionException;
 import com.subguard.model.Subscription;
 import com.subguard.model.User;
 import com.subguard.repository.SubscriptionRepository;
@@ -26,7 +27,7 @@ public class SubscriptionService {
 
     public SubscriptionDTO addSubscription(Long userId, SubscriptionDTO subscriptionDTO) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new SubscriptionException("User not found"));
 
         Subscription subscription = convertToEntity(subscriptionDTO);
         subscription.setUser(user);
@@ -41,7 +42,7 @@ public class SubscriptionService {
 
     public List<SubscriptionDTO> getUserSubscriptions(Long userId) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new SubscriptionException("User not found"));
         return subscriptionRepository.findByUser(user).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -49,7 +50,7 @@ public class SubscriptionService {
 
     public List<SubscriptionDTO> getUpcomingSubscriptions(Long userId, int daysAhead) {
         User user = userrepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new SubscriptionException("User not found"));
 
         LocalDate today = LocalDate.now();
         LocalDate thresholdDate = today.plusDays(daysAhead);

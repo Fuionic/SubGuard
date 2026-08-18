@@ -3,6 +3,8 @@ package com.subguard.controller;
 import com.subguard.DTO.LinkedAccountDTO;
 import com.subguard.service.LinkedAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,28 +21,33 @@ public class LinkedAccountController {
     }
 
     @PostMapping("/user/{userId}")
-    public LinkedAccountDTO addLinkedAccount(@PathVariable Long userId,
+    public ResponseEntity<LinkedAccountDTO> addLinkedAccount(@PathVariable Long userId,
                                              @RequestBody LinkedAccountDTO accountDTO) {
-        return linkedAccountService.addLinkedAccount(userId, accountDTO);
+        LinkedAccountDTO createdAccount = linkedAccountService.addLinkedAccount(userId, accountDTO);
+        return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
     }
 
     @GetMapping("/user/{userId}")
-    public List<LinkedAccountDTO> getUserAccounts(@PathVariable Long userId) {
-        return linkedAccountService.getUserAccounts(userId);
+    public ResponseEntity<List<LinkedAccountDTO>> getUserAccounts(@PathVariable Long userId) {
+        List<LinkedAccountDTO> accounts = linkedAccountService.getUserAccounts(userId);
+        return ResponseEntity.ok(accounts);
     }
 
     @GetMapping("/user/{userId}/unused")
-    public List<LinkedAccountDTO> getUnusedAccounts(@PathVariable Long userId) {
-        return linkedAccountService.getUnusedAccounts(userId);
+    public ResponseEntity<List<LinkedAccountDTO>> getUnusedAccounts(@PathVariable Long userId) {
+        List<LinkedAccountDTO> unusedAccounts = linkedAccountService.getUnusedAccounts(userId);
+        return ResponseEntity.ok(unusedAccounts);
     }
 
     @PutMapping("/{accountId}/confirm-not-using")
-    public LinkedAccountDTO confirmNotUsing(@PathVariable Long accountId) {
-        return linkedAccountService.confirmNotUsing(accountId);
+    public ResponseEntity<LinkedAccountDTO> confirmNotUsing(@PathVariable Long accountId) {
+        LinkedAccountDTO updatedAccount = linkedAccountService.confirmNotUsing(accountId);
+        return ResponseEntity.ok(updatedAccount);
     }
 
     @PutMapping("/{accountId}/confirm-usage")
-    public LinkedAccountDTO confirmUsage(@PathVariable Long accountId) {
-        return linkedAccountService.confirmUsage(accountId);
+    public ResponseEntity<LinkedAccountDTO> confirmUsage(@PathVariable Long accountId) {
+        LinkedAccountDTO updatedAccount = linkedAccountService.confirmUsage(accountId);
+        return ResponseEntity.ok(updatedAccount);
     }
 }

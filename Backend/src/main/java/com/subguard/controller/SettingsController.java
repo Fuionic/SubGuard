@@ -3,6 +3,7 @@ package com.subguard.controller;
 import com.subguard.DTO.UserDTO;
 import com.subguard.service.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -20,17 +21,20 @@ public class SettingsController {
     }
 
     @GetMapping("/{userId}")
-    public Optional<UserDTO> getSettings(@PathVariable Long userId) {
-        return settingsService.getSettings(userId);
+    public ResponseEntity<Optional<UserDTO>> getSettings(@PathVariable Long userId) {
+        Optional<UserDTO> settings = settingsService.getSettings(userId);
+        return ResponseEntity.ok(settings);
     }
 
     @PutMapping("/{userId}")
-    public String updateSettings(@PathVariable Long userId, @RequestBody UserDTO updatedUser) {
-        return settingsService.updateSettings(userId, updatedUser);
+    public ResponseEntity<String> updateSettings(@PathVariable Long userId, @RequestBody UserDTO updatedUser) {
+        String result = settingsService.updateSettings(userId, updatedUser);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/wipe-data/{userId}")
-    public String wipeData(@PathVariable Long userId) {
-        return settingsService.wipeData(userId);
+    public ResponseEntity<String> wipeData(@PathVariable Long userId) {
+        String result = settingsService.wipeData(userId);
+        return ResponseEntity.ok(result);
     }
 }

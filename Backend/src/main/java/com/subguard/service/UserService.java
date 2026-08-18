@@ -4,6 +4,10 @@ import com.subguard.DTO.AuthResponse;
 import com.subguard.DTO.LoginRequest;
 import com.subguard.DTO.SignupRequest;
 import com.subguard.Util.JwtUtil;
+import com.subguard.errorhandling.DuplicateUserException;
+import com.subguard.errorhandling.InvalidCredentialsException;
+import com.subguard.errorhandling.SignupException;
+import com.subguard.errorhandling.UserLoginException;
 import com.subguard.model.User;
 import com.subguard.repository.Userrepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +34,7 @@ public class UserService {
         String email = request.getEmail();
         Optional<User> existingUser = userrepository.findByEmail(email);
         if(existingUser.isPresent()){
-            return new AuthResponse(null, null, "Email already registered");
+            throw new DuplicateUserException("Email already registered");
         }
 
         User user = new User();
@@ -42,7 +46,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         
         if (request.getConfirmPassword() != null && !request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Passwords do not match");
+            throw new SignupException("Passwords do not match");
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -58,7 +62,7 @@ public class UserService {
         String password = request.getPassword();
 
         if (password == null || password.isBlank()) {
-            return new AuthResponse(null, null, "Password is required");
+            throw new InvalidCredentialsException("Password is required");
         }
 
         Optional<User> userOpt = userrepository.findByEmail(identifier);
@@ -73,6 +77,6 @@ public class UserService {
                     String token = jwtUtil.generateToken(u.getUsername());
                     return new AuthResponse(token, u.getId(), "Success");
                 })
-                .orElse(new AuthResponse(null, null, "Invalid credentials"));
+                .orElseThrow(() -> new UserLoginException("Invalid credentials"));
     }
 }
