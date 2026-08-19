@@ -64,6 +64,12 @@ graph TD
 
 ---
 
+## Database Design
+
+<img src="screenshots/Database.png" alt="Database Design" width="100%" />
+
+---
+
 ## Running the Project Locally
 
 The easiest and recommended way to run the project is using Docker.
